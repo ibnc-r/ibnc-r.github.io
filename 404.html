@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+        var path = window.location.pathname.toLowerCase();
+        
+        // এখানে আপনার ৪টি রিপোজিটরির নাম লিস্ট করুন
+        var sites = {
+            "/torikul/": "https://ibnc-r.github.io/Torikul/",
+            "/sohan/": "https://ibnc-r.github.io/Sohan/",
+            "/project3/": "https://ibnc-r.github.io/Project3/",
+            "/project4/": "https://ibnc-r.github.io/Project4/"
+        };
+
+        if (sites[path]) {
+            window.location.replace(sites[path]);
+        } else {
+            // যদি অন্য কোনো ভুল লিঙ্ক হয় তবে মেইন প্রোফাইলে পাঠাবে
+            window.location.replace("https://github.com/ibnc-r");
+        }
+    </script>
+</head>
+<body>
+    Redirecting...
+</body>
+</html>
