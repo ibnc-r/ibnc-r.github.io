@@ -1,27 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>Redirecting...</title>
     <script type="text/javascript">
-        var path = window.location.pathname.toLowerCase();
-        
-        // এখানে আপনার ৪টি রিপোজিটরির নাম লিস্ট করুন
-        var sites = {
-            "/torikul/": "https://ibnc-r.github.io/Torikul/",
-            "/sohan/": "https://ibnc-r.github.io/Sohan/",
-            "/project3/": "https://ibnc-r.github.io/Project3/",
-            "/project4/": "https://ibnc-r.github.io/Project4/"
-        };
-
-        if (sites[path]) {
-            window.location.replace(sites[path]);
-        } else {
-            // যদি অন্য কোনো ভুল লিঙ্ক হয় তবে মেইন প্রোফাইলে পাঠাবে
-            window.location.replace("https://github.com/ibnc-r");
-        }
+        (function() {
+            // বর্তমান পাথ নেওয়া (যেমন: /torikul/ বা /sohan/abc)
+            var path = window.location.pathname; 
+            
+            // পাথ থেকে রিপোজিটরির নাম আলাদা করা
+            var segments = path.split('/').filter(Boolean);
+            
+            if (segments.length > 0) {
+                var repoName = segments[0];
+                
+                // প্রথম অক্ষর বড় হাতের করা (torikul -> Torikul)
+                var capitalizedRepo = repoName.charAt(0).toUpperCase() + repoName.slice(1);
+                
+                // নতুন ইউআরএল তৈরি করা
+                segments[0] = capitalizedRepo;
+                var newPath = "/" + segments.join('/');
+                
+                // নতুন লোকেশনে পাঠিয়ে দেওয়া
+                var newUrl = window.location.origin + newPath + window.location.search + window.location.hash;
+                
+                window.location.replace(newUrl);
+            } else {
+                // যদি কোনো পাথ না থাকে তবে প্রোফাইলে পাঠাবে
+                window.location.replace("https://github.com/ibnc-r");
+            }
+        })();
     </script>
 </head>
 <body>
-    Redirecting...
+    <p>Redirecting to capitalized URL...</p>
 </body>
 </html>
