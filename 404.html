@@ -2,37 +2,59 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Redirecting...</title>
+    <title>Checking Repository...</title>
     <script type="text/javascript">
-        (function() {
-            // বর্তমান পাথ নেওয়া (যেমন: /torikul/ বা /sohan/abc)
-            var path = window.location.pathname; 
+        async function checkAndRedirect() {
+            const username = "ibnc-r";
+            const currentPath = window.location.pathname.split('/').filter(Boolean);
             
-            // পাথ থেকে রিপোজিটরির নাম আলাদা করা
-            var segments = path.split('/').filter(Boolean);
-            
-            if (segments.length > 0) {
-                var repoName = segments[0];
-                
-                // প্রথম অক্ষর বড় হাতের করা (torikul -> Torikul)
-                var capitalizedRepo = repoName.charAt(0).toUpperCase() + repoName.slice(1);
-                
-                // নতুন ইউআরএল তৈরি করা
-                segments[0] = capitalizedRepo;
-                var newPath = "/" + segments.join('/');
-                
-                // নতুন লোকেশনে পাঠিয়ে দেওয়া
-                var newUrl = window.location.origin + newPath + window.location.search + window.location.hash;
-                
-                window.location.replace(newUrl);
-            } else {
-                // যদি কোনো পাথ না থাকে তবে প্রোফাইলে পাঠাবে
-                window.location.replace("https://github.com/ibnc-r");
+            if (currentPath.length === 0) {
+                window.location.replace("https://ibnc-r.github.io/");
+                return;
             }
-        })();
+
+            const requestedRepo = currentPath[0].toLowerCase();
+
+            try {
+                // GitHub API ব্যবহার করে আপনার সব পাবলিক রিপোজিটরি লিস্ট আনা
+                const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
+                const repos = await response.json();
+
+                // চেক করা হচ্ছে কোনো রিপোজিটরির নাম (ছোট হাতের করলে) ইউজারের রিকোয়েস্টের সাথে মিলে কি না
+                const matchedRepo = repos.find(repo => repo.name.toLowerCase() === requestedRepo);
+
+                if (matchedRepo) {
+                    // যদি মিল পাওয়া যায়, তবে আসল নামে (যেমন MyNewProject) রিডাইরেক্ট করবে
+                    const newPath = [matchedRepo.name, ...currentPath.slice(1)].join('/');
+                    const finalUrl = window.location.origin + "/" + newPath + window.location.search + window.location.hash;
+                    
+                    // লুপ ঠেকানোর জন্য চেক: যদি বর্তমান ইউআরএল আর নতুন ইউআরএল এক না হয় তবেই রিডাইরেক্ট
+                    if (window.location.href !== finalUrl) {
+                        window.location.replace(finalUrl);
+                    } else {
+                        showError();
+                    }
+                } else {
+                    // যদি কোনো রিপোজিটরি না মিলে, তবে মেইন সাইটে পাঠাবে
+                    window.location.replace("https://ibnc-r.github.io/");
+                }
+            } catch (error) {
+                console.error("API Error:", error);
+                window.location.replace("https://ibnc-r.github.io/");
+            }
+        }
+
+        function showError() {
+            document.body.innerHTML = "<h1>404 - Page Not Found</h1><p>Returning to <a href='/'>Home</a>...</p>";
+            setTimeout(() => window.location.replace("/"), 3000);
+        }
+
+        checkAndRedirect();
     </script>
 </head>
 <body>
-    <p>Redirecting to capitalized URL...</p>
+    <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
+        <p>Loading project...</p>
+    </div>
 </body>
 </html>
